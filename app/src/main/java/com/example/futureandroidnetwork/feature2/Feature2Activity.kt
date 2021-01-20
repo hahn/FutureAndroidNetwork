@@ -19,10 +19,8 @@ class Feature2Activity : AppCompatActivity() {
         findViewById<Button>(R.id.bt_download).setOnClickListener {
             if (!downloading) {
                 downloading = true
-
-                runOnUiThread {
-                    startDownloadUrl()
-                }
+                printResult("loading...")
+                startDownloadUrl()
             }
         }
     }
@@ -52,8 +50,6 @@ class Feature2Activity : AppCompatActivity() {
                     printResult(result)
                 }
             }
-
-
         })
     }
 
