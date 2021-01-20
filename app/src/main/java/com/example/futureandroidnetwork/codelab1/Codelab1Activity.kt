@@ -1,23 +1,25 @@
 package com.example.futureandroidnetwork.codelab1
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.Image
+import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.example.futureandroidnetwork.R
 import okhttp3.*
-import java.io.IOException
-import java.io.InputStream
+import java.io.*
+import java.net.URL
 
-class Codelab1Activity : AppCompatActivity() {
+class Codelab1Activity : AppCompatActivity(), DownloadCallback<Bitmap> {
 
+    private var callback: DownloadCallback<Bitmap>? = null
     companion object {
-        private val url = "https://reqres.in/img/faces/1-image.jpg"
+        private const val url = "https://reqres.in/img/faces/1-image.jpg"
+        private const val url2 = "https://reqres.in/img/faces/2-image.jpg"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +27,10 @@ class Codelab1Activity : AppCompatActivity() {
 
         findViewById<Button>(R.id.bt_okhttp).setOnClickListener {
             showImageWithOkHttp()
+        }
+
+        findViewById<Button>(R.id.bt_asynctask).setOnClickListener {
+            showImageWithASynctask()
         }
     }
 
@@ -76,4 +82,69 @@ class Codelab1Activity : AppCompatActivity() {
             findViewById<TextView>(R.id.tv_error).text = message
         }
     }
+
+    private fun showImageWithASynctask() {
+        callback = this as? DownloadCallback<Bitmap>
+        callback?.let {
+            DownloadTask(it).apply {
+                execute(url2)
+            }
+        }
+    }
+
+    override fun onSuccess(result: Bitmap?) {
+        findViewById<ImageView>(R.id.imageView).setImageBitmap(result)
+    }
+
+    override fun onFailure(ex: Exception) {
+        ex.printStackTrace()
+        ex.message?.let { showErrorMessage(it) }
+    }
+
+    override fun onDestroy() {
+        callback = null
+        super.onDestroy()
+    }
+
+    private class DownloadTask(private val callback: DownloadCallback<Bitmap>): AsyncTask<String, Int, DownloadTask.ResponseResult>() {
+        override fun doInBackground(vararg urls: String?): ResponseResult? {
+            var result: ResponseResult? = null
+
+            if (!isCancelled && urls.isNotEmpty()) {
+                val urlString = urls[0]
+                result = try {
+                    val inputStream = URL(urlString).openStream()
+                    ResponseResult(BitmapFactory.decodeStream(inputStream))
+                } catch (e: Exception) {
+                    ResponseResult(e)
+                }
+            }
+
+            return result
+        }
+
+        override fun onPostExecute(result: ResponseResult?) {
+            result?.resultValue?.also {
+                callback.onSuccess(it)
+            }
+            result?.exception?.also {
+                callback.onFailure(it)
+            }
+        }
+
+        class ResponseResult {
+            var resultValue: Bitmap? = null
+            var exception: Exception? = null
+
+            constructor(resultValue: Bitmap) {
+                this.resultValue = resultValue
+            }
+
+            constructor(exception: Exception) {
+                this.exception = exception
+            }
+        }
+    }
+
+
 }
