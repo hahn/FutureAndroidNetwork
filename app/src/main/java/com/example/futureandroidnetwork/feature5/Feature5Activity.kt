@@ -2,9 +2,11 @@ package com.example.futureandroidnetwork.feature5
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import com.example.futureandroidnetwork.R
+import com.google.gson.Gson
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -28,6 +30,7 @@ class Feature5Activity : AppCompatActivity() {
                     val result = response.body()?.string()
                     result?.let {
                         showText(it)
+                        changeJsonToObject(it)
                     }
                 } else {
                     showText("not success")
@@ -43,8 +46,11 @@ class Feature5Activity : AppCompatActivity() {
 
     private fun showText(resultString: String) {
         findViewById<TextView>(R.id.tv_result).text = "result: $resultString"
+    }
 
-
+    private fun changeJsonToObject(jsonString: String) {
+        val responseObject: ApiResponse = Gson().fromJson(jsonString, ApiResponse::class.java)
+        Log.d("LOG", "user email: ${responseObject.data.email}")
     }
 
 
