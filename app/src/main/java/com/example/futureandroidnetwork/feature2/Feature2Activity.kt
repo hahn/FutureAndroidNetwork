@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.TextView
 import com.example.futureandroidnetwork.R
 import okhttp3.*
+import okhttp3.logging.HttpLoggingInterceptor
 import java.io.IOException
 
 class Feature2Activity : AppCompatActivity() {
@@ -26,7 +27,9 @@ class Feature2Activity : AppCompatActivity() {
     }
 
     private fun startDownloadUrl() {
-        val client = OkHttpClient()
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS)
+        val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
         var result = ""
         val request = Request.Builder()
             .url(url)
