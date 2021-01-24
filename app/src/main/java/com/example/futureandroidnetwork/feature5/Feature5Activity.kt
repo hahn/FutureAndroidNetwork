@@ -1,10 +1,12 @@
 package com.example.futureandroidnetwork.feature5
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import com.example.futureandroidnetwork.R
+import com.example.futureandroidnetwork.codelab2.Codelab2Activity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -15,7 +17,7 @@ class Feature5Activity : AppCompatActivity() {
         setContentView(R.layout.activity_feature5)
 
         findViewById<Button>(R.id.bt_download).setOnClickListener {
-            downloadUserDetail()
+            startActivity(Intent(this, Codelab2Activity::class.java))
         }
     }
 

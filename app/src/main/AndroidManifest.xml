@@ -12,6 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FutureAndroidNetwork">
+        <activity android:name=".codelab2.GithubRepoListActivity"></activity>
+        <activity android:name=".codelab2.Codelab2Activity" />
         <activity android:name=".feature5.Feature5Activity" />
         <activity android:name=".MainActivity">
             <intent-filter>
